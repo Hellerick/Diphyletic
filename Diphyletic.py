@@ -14,9 +14,15 @@ moves = [
 def main():
     colony = Colony()
     colony.random_fill([6, 6])
-    while True:
+    alive = True
+    previous_image = ''
+    while alive:
         colony.show()
         colony.evolve()
+        if colony.image == previous_image:
+            alive = False
+        previous_image = colony.image
+        input('Continue')
 
 
 class Colony:
@@ -24,6 +30,7 @@ class Colony:
     def __init__(self):
         self.map = []
         self.generation = 0
+        self.image = ''
 
     def random_fill(self, size):
         colony_map = []
@@ -34,8 +41,7 @@ class Colony:
 
     def show(self):
         print('Generation', self.generation)
-        for line in self.map:
-            print(' '.join(' mf'[c] for c in line))
+        print(self.image)
         print()
 
     def check_borders(self):
@@ -47,9 +53,9 @@ class Colony:
             self.map = [l[1:] for l in self.map]
         while sum([l[-1] for l in self.map]) == 0:
             self.map = [l[:-1] for l in self.map]
-        self.map = [[0]+l+[0] for l in self.map]
+        self.map = [[0]+[0]+l+[0]+[0] for l in self.map]
         empty_line = [0] * len(self.map[0])
-        self.map = [empty_line] + self.map + [empty_line]
+        self.map = [empty_line] + [empty_line] + self.map + [empty_line] + [empty_line]
 
     def neighbors(self, i, j):
         males = 0
@@ -81,13 +87,13 @@ class Colony:
                     paircode = [c for c in paircode if c != '0']
                     gender = int(paircode[0])
                     birthlist += [[i,j,gender]]
-                if self.map[i][j] != 0 and neighbors[0] == 2:
+                if self.map[i][j] != 0 and neighbors[0] in [3,2]:
                     moved = False
                     for m in moves:
                         if not moved:
                             new_neighbors = self.neighbors(i+m[0], j+m[1])
-                            if new_neighbors == 1 and new_neighbors[3-self.map[i][j]] == 1:
-                                movelist += [i,j,i+m[0],j+m[1]]
+                            if new_neighbors[0] in [1,2] and new_neighbors[0] < neighbors[0]:
+                                movelist += [[i,j,i+m[0],j+m[1]]]
                                 moved = True
         for b in birthlist:
             self.map[b[0]][b[1]] = b[2]
@@ -96,6 +102,7 @@ class Colony:
         for m in movelist:
             self.map[m[2]][m[3]] = self.map[m[0]][m[1]]
             self.map[m[0]][m[1]] = 0
+        self.image = '\n'.join([' '.join([' mf'[j] for j in i]) for i in self.map])
 
 if __name__ == '__main__':
     main()
