@@ -30,24 +30,24 @@ def main():
     colony = Colony()
     colony.random_fill([3, 3])
 
-    colony.input_by_map('''
-    mf
-    mfm
-    fmm
-    ''')
-
-    colony.input_by_map('''
-    m m
-    mff
-    ''')
-
-    # colony.enter('''
-    #  m  fff  m   f
-    # m m f   mm  f f
-    #  m  ff   m  f f
-    # m m   f  m  f f
-    #  m  ff  mmm  f
+    # colony.input_by_map('''
+    # mf
+    # mfm
+    # fmm
     # ''')
+    #
+    # colony.input_by_map('''
+    # m m
+    # mff
+    # ''')
+
+    colony.input_by_map('''
+    fff mmm f mmm
+    f f m   f m
+    fff mmm f mmm
+    f f   m f m m
+    fff mmm f mmm
+    ''')
 
     while colony.alive:
         if True or colony.generation in [0, 8512]:
@@ -55,6 +55,8 @@ def main():
         if colony.generation % 100 == 0:
             print(colony.generation, colony.population())
         colony.evolve()
+        if colony.population()[M] == 0:
+            colony.alive = False
         if not colony.alive:
             colony.show()
         # input('Continue')
@@ -89,7 +91,7 @@ class Colony:
         self.map = input_map
 
     def show(self):
-        print('Generation', self.generation)
+        print(f'Generation {self.generation} ({self.population()[M]}m/{self.population()[F]}f)')
         print(self.image())
         print()
 
