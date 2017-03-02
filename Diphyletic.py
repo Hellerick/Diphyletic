@@ -28,7 +28,18 @@ elif rules == 2:
 
 def main():
     colony = Colony()
-    colony.random_fill([4, 4])
+    colony.random_fill([3, 3])
+
+    colony.input_by_map('''
+    mf
+    mfm
+    fmm
+    ''')
+
+    colony.input_by_map('''
+    m m
+    mff
+    ''')
 
     # colony.enter('''
     #  m  fff  m   f
@@ -39,8 +50,13 @@ def main():
     # ''')
 
     while colony.alive:
-        colony.show()
+        if True or colony.generation in [0, 8512]:
+            colony.show()
+        if colony.generation % 100 == 0:
+            print(colony.generation, colony.population())
         colony.evolve()
+        if not colony.alive:
+            colony.show()
         # input('Continue')
 
 
@@ -194,6 +210,12 @@ class Colony:
         image = '\n'.join([' '.join([' mf'[j] for j in i]) for i in self.map])
         image = re.sub(' +\n', r'\n', image)
         return image
+
+    def population(self):
+        males = sum([sum([1 for c in line if c == 1]) for line in self.map])
+        females = sum([sum([1 for c in line if c == 2]) for line in self.map])
+        total = males+females
+        return total, males, females
 
 if __name__ == '__main__':
     main()
